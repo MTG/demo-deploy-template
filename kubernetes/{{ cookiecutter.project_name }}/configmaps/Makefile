@@ -1,0 +1,3 @@
+all:
+	kubectl create configmap -n {{ cookiecutter.namespace }} --dry-run=client {{ cookiecutter.project_name }}-nginx-config --from-file={{ cookiecutter.project_name }}_nginx.conf={{ cookiecutter.project_name }}_nginx.conf -o yaml > {{ cookiecutter.project_name }}-nginx-config.yaml
+	kubectl create configmap -n {{ cookiecutter.namespace }} --dry-run=client {{ cookiecutter.project_name }}-django-config --from-file=local_settings.py=local_settings.py -o yaml > {{ cookiecutter.project_name }}-django-config.yaml

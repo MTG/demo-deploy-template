@@ -1,0 +1,20 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ cookiecutter.internal_hostname | replace('.', '-') }}
+  namespace: {{ cookiecutter.namespace }}
+spec:
+  gateways:
+  - {{ cookiecutter.namespace }}-gw
+  hosts:
+  - {{ cookiecutter.internal_hostname }}
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: nginx
+        port:
+          number: 80
+      weight: 100

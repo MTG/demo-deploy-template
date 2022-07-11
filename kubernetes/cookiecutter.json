@@ -1,0 +1,8 @@
+{
+    "project_name": "myproject",
+    "namespace": "mtg-{{ cookiecutter.project_name|lower|replace(' ', '-') }}",
+    "docker_config": "~/.docker/config.json",
+    "internal_hostname": "{{ cookiecutter.project_name }}.mtg.sb.upf.edu",
+    "nfs_volume": "/MTG/MTG-{{ cookiecutter.project_name }}",
+    "app_image": "registry.sb.upf.edu/mtg/{{ cookiecutter.project_name }}:1"
+  }

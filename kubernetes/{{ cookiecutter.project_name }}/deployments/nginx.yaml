@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: {{ cookiecutter.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - image: registry.sb.upf.edu/mtg/nginx:1.21.6
+          name: nginx
+          ports:
+            - containerPort: 80
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "100m"
+            limits:
+              memory: "400Mi"
+              cpu: "200m"
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d/default.conf
+              name: nginx
+              subPath: {{ cookiecutter.project_name }}_nginx.conf
+            - mountPath: /static
+              name: {{ cookiecutter.project_name }}-static
+      restartPolicy: Always
+      volumes:
+        - name: nginx
+          configMap:
+            name: {{ cookiecutter.project_name }}-nginx-config
+        - name: {{ cookiecutter.project_name }}-static
+          nfs:
+            path: {{ cookiecutter.nfs_volume }}
+            server: 10.80.110.228
+      imagePullSecrets:
+        - name: {{ cookiecutter.project_name }}-registry

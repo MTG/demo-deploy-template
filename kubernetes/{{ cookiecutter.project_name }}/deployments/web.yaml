@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: {{ cookiecutter.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - args:
+            - dumb-init
+            - uwsgi
+            - --die-on-term
+            - uwsgi.ini
+          envFrom:
+            - configMapRef:
+                name: {{ cookiecutter.project_name }}-web-env
+          env:
+            - name: VARIABLE
+              value: value
+          name: web
+          image: {{ cookiecutter.app_image }}
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "500Mi"
+              cpu: "200m"
+            limits:
+              memory: "1000Mi"
+              cpu: "400m"
+          volumeMounts:
+            - mountPath: /static
+              name: {{ cookiecutter.project_name }}-static
+            - mountPath: /code/local_settings.py
+              name: django-config
+              subPath: local_settings.py
+      restartPolicy: Always
+      volumes:
+        - name: {{ cookiecutter.project_name }}-static
+          nfs:
+            path: {{ cookiecutter.nfs_volume }}
+            server: 10.80.110.228
+        - name: django-config
+          configMap:
+            name: {{ cookiecutter.project_name }}-django-config
+      imagePullSecrets:
+        - name: {{ cookiecutter.project_name }}-registry
